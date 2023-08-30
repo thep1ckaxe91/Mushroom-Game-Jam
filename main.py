@@ -15,7 +15,7 @@ class Game:
 
     def update(self):
         self.clock.tick(GAME_CONST.MAX_FPS)
-        self.dt = self.clock.get_rawtime()*0.001
+        self.dt = self.clock.get_time()*0.001
         
         self.current_scene.update(self)
         GAME_CONST.update()
