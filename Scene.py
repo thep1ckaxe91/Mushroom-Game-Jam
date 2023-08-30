@@ -1,5 +1,6 @@
 import pygame
-from CONST import GAME_CONST
+from CONST import Game_CONST
+from UX_prop import *
 from typing import TYPE_CHECKING
 
 from main import Game
@@ -22,9 +23,12 @@ class Level(Scene):
 class MainMenu(Scene):
     def __init__(self, game: Game):
         super().__init__(game)
+        
+        play_button_pos = (Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3)
+        self.play_button = Button(Game_CONST.PATH + '/assets/graphics/ux-ui/button/play',play_button_pos,self.game,print,('worked!'))
     
-    def check_events(self):
-        for event in pygame.event.get():
-            pass
+    def update(self):
+        self.play_button.update()
     
-    def d
+    def draw(self):
+        self.play_button.draw()
