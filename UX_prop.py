@@ -10,32 +10,38 @@ class Button:
     
     def __init__(self, path, center_pos, game : 'Game', func : 'function', args : tuple | list) -> None:
         self.game = game
-        self.default = Texture.from_surface(game.renderer,pygame.transform.scale_by(pygame.image.load(path+'/default.png'),Game_CONST.SCALE))
-        self.hang = Texture.from_surface(game.renderer,pygame.transform.scale_by(pygame.image.load(path+'/hang.png'),Game_CONST.SCALE))
-        self.press = Texture.from_surface(game.renderer,pygame.transform.scale_by(pygame.image.load(path+'/press.png'),Game_CONST.SCALE))
+        self.default = Texture.from_surface(game.renderer,pygame.image.load(path+'/default.png'))
+        self.hang = Texture.from_surface(game.renderer,pygame.image.load(path+'/hang.png'))
+        self.press = Texture.from_surface(game.renderer,pygame.image.load(path+'/press.png'))
         self.current_state = 0
         self.previous_state = 0
+        self.center_pos = center_pos
         self.hitbox : pygame.Rect = self.default.get_rect(center = center_pos)
         self.func = func
         self.args = args
 
     def update(self):
+
+        self.hitbox.w = self.default.get_rect().w * Game_CONST.SCALE
+        self.hitbox.h = self.default.get_rect().h * Game_CONST.SCALE
+        self.hitbox.center = self.center_pos
+
         self.current_state = 0
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
             self.current_state = 1
             if pygame.mouse.get_pressed()[0]:
                 self.current_state = 2
-        self.previous_state = self.current_state
 
         if self.previous_state == 2 and self.current_state == 0:
-            self.previous_state = 0
             self.func(*self.args)
+            
+        self.previous_state = self.current_state
 
             
     def draw(self):
         if self.current_state == 0:
-            self.default.draw(self.hitbox,self.hitbox)
+            self.default.draw(self.default.get_rect(),self.hitbox)
         elif self.current_state == 1:
-            self.hang.draw(self.hitbox,self.hitbox)
+            self.hang.draw(self.hang.get_rect(),self.hitbox)
         else:
-            self.press.draw(self.hitbox,self.hitbox)
+            self.press.draw(self.press.get_rect(),self.hitbox)
