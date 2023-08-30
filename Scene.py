@@ -26,3 +26,5 @@ class MainMenu(Scene):
     def check_events(self):
         for event in pygame.event.get():
             pass
+    
+    def d
