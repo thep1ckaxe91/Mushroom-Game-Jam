@@ -15,17 +15,25 @@ class GAME_CONST:
         self.TILE_SIZE = 16
         self.CAMERA_WIDTH,self.CAMERA_HEIGHT = 1600,900
         self.SCR_WIDTH,self.SCR_HEIGHT = 1600,900
+        self.camera_screen_ratio = 1
+
         self.SCR_SCALE = 5
         self.SCALE = self.SCR_SCALE
 
-    def update(self,game : 'Game'):
-        self.SCR_HEIGHT = int(game.window.size[1])
-        self.SCR_WIDTH = int(16*self.SCR_HEIGHT/9)
+    def resize_update(self,game : 'Game'):
+        self.SCR_WIDTH = game.window.size[0]
+        # self.CAMERA_WIDTH = self.camera_screen_ratio * self.SCR_WIDTH
 
-        self.CAMERA_WIDTH = min(int(self.CAMERA_WIDTH),self.SCR_WIDTH)
+    def update(self,game : 'Game'):
+        self.SCR_WIDTH = int(self.SCR_WIDTH)
+        self.SCR_HEIGHT = int(9*self.SCR_WIDTH/16)
+        game.window.size = self.SCR_WIDTH,self.SCR_HEIGHT
+        self.CAMERA_WIDTH = int(self.CAMERA_WIDTH)
         self.CAMERA_HEIGHT = int(9*self.CAMERA_WIDTH/16)
 
-        self.SCALE = int(self.SCR_WIDTH/self.CAMERA_WIDTH*self.SCR_SCALE)
+        # self.camera_screen_ratio = self.CAMERA_WIDTH/self.SCR_WIDTH
+
+        self.SCALE = self.SCR_WIDTH/self.CAMERA_WIDTH*self.SCR_SCALE
 
 Game_CONST = GAME_CONST()
         

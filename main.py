@@ -20,8 +20,8 @@ class Game:
         self.clock.tick(Game_CONST.MAX_FPS)
         self.dt = self.clock.get_time()*0.001
         
-        self.current_scene.update()
         Game_CONST.update(self)
+        self.current_scene.update()
 
     def draw(self):
         self.renderer.clear()
@@ -36,8 +36,11 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.VIDEORESIZE:
+                    Game_CONST.resize_update(self) 
             self.update()
             self.draw()
+            
         pygame.quit()
         self.window.destroy()
 

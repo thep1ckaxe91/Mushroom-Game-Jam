@@ -8,23 +8,22 @@ if TYPE_CHECKING:
 
 class Button:
     
-    def __init__(self, path, center_pos, game : 'Game', func : 'function', args : tuple | list) -> None:
+    def __init__(self, path, center_pos, game : 'Game', func : 'function', args : list) -> None:
         self.game = game
         self.default = Texture.from_surface(game.renderer,pygame.image.load(path+'/default.png'))
         self.hang = Texture.from_surface(game.renderer,pygame.image.load(path+'/hang.png'))
         self.press = Texture.from_surface(game.renderer,pygame.image.load(path+'/press.png'))
         self.current_state = 0
         self.previous_state = 0
-        self.center_pos = center_pos
+        self.center_ratio_x,self.center_ratio_y = center_pos[0]/game.window.size[0], center_pos[1]/game.window.size[1]
         self.hitbox : pygame.Rect = self.default.get_rect(center = center_pos)
         self.func = func
         self.args = args
 
     def update(self):
-
         self.hitbox.w = self.default.get_rect().w * Game_CONST.SCALE
         self.hitbox.h = self.default.get_rect().h * Game_CONST.SCALE
-        self.hitbox.center = self.center_pos
+        self.hitbox.center = self.center_ratio_x * self.game.window.size[0], self.center_ratio_y * self.game.window.size[1]
 
         self.current_state = 0
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
@@ -32,11 +31,10 @@ class Button:
             if pygame.mouse.get_pressed()[0]:
                 self.current_state = 2
 
-        if self.previous_state == 2 and self.current_state == 0:
+        if self.previous_state == 2 and self.current_state == 1:
             self.func(*self.args)
             
         self.previous_state = self.current_state
-
             
     def draw(self):
         if self.current_state == 0:
