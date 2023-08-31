@@ -24,14 +24,38 @@ class MainMenu(Scene):
         super().__init__(game)
         
         self.main_menu_bg = Texture.from_surface(game.renderer,pygame.image.load(Game_CONST.PATH + '/assets/graphics/general/main_menu_background.png'))
-        self.play_button = Button(Game_CONST.PATH + '/assets/graphics/ux-ui/button/play',(Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3),self.game,print,['worked!'])
-        self.options_button = Button(Game_CONST.PATH + '/assets/graphics/ux-ui/button/options')    
+        self.play_button = Button(
+            Game_CONST.PATH + '/assets/graphics/ux-ui/button/play',
+            (Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3),
+            self.game,
+            print, #placeholder
+            ['play']
+        )
+        
+        self.options_button = Button(
+            Game_CONST.PATH + '/assets/graphics/ux-ui/button/options',
+            (Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3 + Game_CONST.SCR_HEIGHT/9),
+            self.game,
+            print,
+            ['options']
+        )
+
+        self.quit_button = Button(
+            Game_CONST.PATH + '/assets/graphics/ux-ui/button/quit',
+            (Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3 + 2*Game_CONST.SCR_HEIGHT/9),
+            self.game,
+            exit,
+            [0]
+        )   
 
 
     def update(self):
         self.play_button.update()
-
+        self.options_button.update()
+        self.quit_button.update()
 
     def draw(self):
         self.main_menu_bg.draw(self.main_menu_bg.get_rect(),pygame.Rect(0,0,self.game.window.size[0], self.game.window.size[1]))
         self.play_button.draw()
+        self.options_button.draw()
+        self.quit_button.draw()
