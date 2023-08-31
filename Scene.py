@@ -23,13 +23,14 @@ class MainMenu(Scene):
     def __init__(self, game: 'Game'):
         super().__init__(game)
         
-        self.play_button_pos = (Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3)
         self.main_menu_bg = Texture.from_surface(game.renderer,pygame.image.load(Game_CONST.PATH + '/assets/graphics/general/main_menu_background.png'))
-        self.play_button = Button(Game_CONST.PATH + '/assets/graphics/ux-ui/button/play',self.play_button_pos,self.game,print,['worked!'])
-    
+        self.play_button = Button(Game_CONST.PATH + '/assets/graphics/ux-ui/button/play',(Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3),self.game,print,['worked!'])
+        self.options_button = Button(Game_CONST.PATH + '/assets/graphics/ux-ui/button/options')    
+
+
     def update(self):
-        self.play_button_pos = (Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT*2/3)
         self.play_button.update()
+
 
     def draw(self):
         self.main_menu_bg.draw(self.main_menu_bg.get_rect(),pygame.Rect(0,0,self.game.window.size[0], self.game.window.size[1]))
