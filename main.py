@@ -11,10 +11,9 @@ class Game:
         self.window = Window(
             Game_CONST.GAME_NAME, (Game_CONST.SCR_WIDTH, Game_CONST.SCR_HEIGHT)
         )
-        self.window.position = [0,0]
         self.window.resizable = True
         self.renderer = Renderer(self.window)
-        self.current_scene: Scene = MainMenu(self)
+        self.scene_stack: list[Scene] = [MainMenu(self)]
 
         self.dt = -1
         self.clock = pygame.time.Clock()
@@ -24,12 +23,12 @@ class Game:
         self.dt = self.clock.get_time() * 0.001
 
         Game_CONST.update(self)
-        self.current_scene.update()
+        self.scene_stack[-1].update()
 
     def draw(self):
         self.renderer.clear()
 
-        self.current_scene.draw()
+        self.scene_stack[-1].draw()
 
         self.renderer.present()
 

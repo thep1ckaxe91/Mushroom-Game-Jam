@@ -1,7 +1,13 @@
-import json
+class A:
+    def __init__(self) -> None:
+        pass
 
-data = {
-    'Nam' : 18,
-    'Huy' : 18,
-    'Khoi': 10
-}
+class B(A):
+    pass
+class C(A):
+    pass
+
+
+def get(a : A, b : A):
+    print(type(a) != type(b))
+get(B(),C())
