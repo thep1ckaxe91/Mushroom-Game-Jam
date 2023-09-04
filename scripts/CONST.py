@@ -6,9 +6,12 @@ if TYPE_CHECKING:
 
 class GAME_CONST:
     
+    new_game_data = {
+        #placeholder
+    }
 
     def __init__(self) -> None:
-        self.PATH = os.path.abspath(os.path.dirname(__file__)).replace("\\","/")
+        self.PATH = os.path.abspath(os.path.dirname(__file__)).replace("\\","/") + "/.."
         self.GAME_NAME = "Mushroom Apocalypse"
         self.MAX_FPS = 100
 

@@ -41,6 +41,7 @@ class Game:
                     running = False
                 elif event.type == pygame.VIDEORESIZE:
                     Game_CONST.resize_update(self)
+                self.scene_stack[-1].check_events(event)
             self.update()
             self.draw()
 

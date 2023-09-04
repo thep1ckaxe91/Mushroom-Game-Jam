@@ -1,9 +1,12 @@
 
 from CONST import Game_CONST
 from SpriteHandler import SpriteUnit
+from scripts.SpriteHandler import SpriteHandler
 
-class Tile(SpriteUnit):
-    
+# class Tile(SpriteUnit):
+#     def __init__(self, handler: SpriteHandler):
+#         super().__init__(handler)
+#         self.image = 
 
 class Tilemap:
     def __init__(self):

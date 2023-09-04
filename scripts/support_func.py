@@ -1,5 +1,5 @@
 import os, pygame
-from CONST import Game_CONST
+from scripts.CONST import Game_CONST
 from pygame._sdl2.video import Texture, Renderer
 
 

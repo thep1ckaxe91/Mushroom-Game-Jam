@@ -1,6 +1,6 @@
 import pygame
 from pygame._sdl2.video import Texture,Image
-from CONST import Game_CONST
+from scripts.CONST import Game_CONST
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

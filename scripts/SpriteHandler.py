@@ -8,15 +8,17 @@ if TYPE_CHECKING:
     from main import Game
 
 class SpriteHandler:
-    def __init__(self, game : "Game", path : str):
+    def __init__(self, game : "Game"):
         self.game = game
-        self.images = load_images(game.renderer, path)
+        self.images = []
         self.group = pygame.sprite.Group()
         self.sprites = []
     
-    def update(self): ...
+    def update(self):
+        self.group.update()
 
-    def draw(self): ...
+    def draw(self):
+        self.group.draw(self.game.renderer)
 
 class SpriteUnit(pygame.sprite.Sprite):
     def __init__(self, handler : SpriteHandler):
