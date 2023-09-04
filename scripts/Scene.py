@@ -3,7 +3,9 @@ from CONST import Game_CONST
 from UX_prop import *
 from typing import TYPE_CHECKING
 from pygame import freetype
-from support_func import lerp
+from UX_prop import Game
+from main import Game
+from support_func import *
 
 if TYPE_CHECKING:
     from main import Game
@@ -35,13 +37,50 @@ def load_scene(game: "Game", scene: Scene, delay: int = 0):
 
 
 def go_back_scene(game: "Game"):
-    game.scene_stack.pop(-1)
+    del game.scene_stack[-1]
 
+'''
+  _____  _                   _     _        _                    _ 
+ |  __ \| |                 | |   | |      | |                  | |
+ | |__) | | __ _ _   _  __ _| |__ | | ___  | |     _____   _____| |
+ |  ___/| |/ _` | | | |/ _` | '_ \| |/ _ \ | |    / _ \ \ / / _ \ |
+ | |    | | (_| | |_| | (_| | |_) | |  __/ | |___|  __/\ V /  __/ |
+ |_|    |_|\__,_|\__, |\__,_|_.__/|_|\___| |______\___| \_/ \___|_|
+                  __/ |                                            
+                 |___/                                             
+'''
 
 class Level(Scene):
     def __init__(self, game: "Game", data: dict):
         super().__init__(game)
+        pass
 
+'''
+   _____      _      _____                     
+  / ____|    | |    / ____|                    
+ | |    _   _| |_  | (___   ___ ___ _ __   ___ 
+ | |   | | | | __|  \___ \ / __/ _ \ '_ \ / _ \
+ | |___| |_| | |_   ____) | (_|  __/ | | |  __/
+  \_____\__,_|\__| |_____/ \___\___|_| |_|\___|
+                                               
+                                               
+'''
+
+class CutScene(Scene):
+    def __init__(self, game: Game):
+        super().__init__(game)
+
+
+'''
+   _____ _                             _____                   ______ _ _      
+  / ____| |                           / ____|                 |  ____(_) |     
+ | |    | |__   ___   ___  ___  ___  | (___   __ ___   _____  | |__   _| | ___ 
+ | |    | '_ \ / _ \ / _ \/ __|/ _ \  \___ \ / _` \ \ / / _ \ |  __| | | |/ _ \
+ | |____| | | | (_) | (_) \__ \  __/  ____) | (_| |\ V /  __/ | |    | | |  __/
+  \_____|_| |_|\___/ \___/|___/\___| |_____/ \__,_| \_/ \___| |_|    |_|_|\___|
+                                                                               
+                                                                               
+'''
 
 class SaveFileChoose(Scene):
     def __init__(self, game: "Game"):
@@ -101,10 +140,10 @@ class SaveFileChoose(Scene):
         for save_button in self.save_file_buttons:
             save_button.update()
             save_button.center_ratio_y = lerp(
-                save_button.center_ratio_y, 0.5, 1 * self.game.dt
+                save_button.center_ratio_y, 0.5, 5 * self.game.dt
             )
         self.go_back.update()
-
+        print('save scene in active')
     def draw(self):
         self.bg.draw(
             self.bg.get_rect(),
@@ -113,6 +152,24 @@ class SaveFileChoose(Scene):
         for save_button in self.save_file_buttons:
             save_button.draw()
         self.go_back.draw()
+
+
+
+
+
+
+'''
+
+  __  __       _         __  __                  
+ |  \/  |     (_)       |  \/  |                 
+ | \  / | __ _ _ _ __   | \  / | ___ _ __  _   _ 
+ | |\/| |/ _` | | '_ \  | |\/| |/ _ \ '_ \| | | |
+ | |  | | (_| | | | | | | |  | |  __/ | | | |_| |
+ |_|  |_|\__,_|_|_| |_| |_|  |_|\___|_| |_|\__,_|
+                                                 
+                                                 
+
+'''
 
 
 class MainMenu(Scene):

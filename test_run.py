@@ -1,13 +1,7 @@
-class A:
-    def __init__(self) -> None:
-        pass
+import os 
 
-class B(A):
-    pass
-class C(A):
-    pass
+path = os.path.abspath(os.path.dirname(__file__)).replace("\\","/")
 
-
-def get(a : A, b : A):
-    print(type(a) != type(b))
-get(B(),C())
+for root,dirs,files in os.walk(path+"/ideas"):
+    for file in files:
+        print(file)

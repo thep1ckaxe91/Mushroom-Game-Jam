@@ -19,6 +19,7 @@ class Button:
         self.hitbox : pygame.Rect = self.default.get_rect(center = center_pos)
         self.func = func
         self.args = args
+        self.isClicking = False
 
     def update(self):
         self.hitbox.w = self.default.get_rect().w * Game_CONST.SCALE
@@ -31,7 +32,9 @@ class Button:
             if pygame.mouse.get_pressed()[0]:
                 self.current_state = 2
 
+        self.isClicking = False
         if self.previous_state == 2 and self.current_state == 1:
+            self.isClicking = True
             self.func(*self.args)
             
         self.previous_state = self.current_state

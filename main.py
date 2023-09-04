@@ -1,7 +1,8 @@
 import pygame, os
 from pygame._sdl2.video import Window, Texture, Image, Renderer
-from CONST import Game_CONST
-from Scene import *
+from scripts.CONST import Game_CONST #import first
+
+from scripts.Scene import *
 
 pygame.init()
 
