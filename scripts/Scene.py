@@ -4,7 +4,6 @@ from scripts.CONST import Game_CONST
 from scripts.UX_prop import *
 from typing import TYPE_CHECKING
 from pygame import freetype
-from scripts.UX_prop import Game
 from scripts.support_func import *
 
 freetype.init()
@@ -12,7 +11,6 @@ freetype.init()
 if TYPE_CHECKING:
     from main import Game
 """
-draw func dont need clear and present, only need to pass the draw func
 
 event will be pass, do the if else only
 """
@@ -88,30 +86,38 @@ class CutScene(Scene):
 
 class SceneTransition(Scene):
 
-    def __init__(self, game: Game, next_scene : Scene, zoom_pos , is_exit_trans = False, duration: float = 1):
+    def __init__(self, game: Game, next_scene : Scene, is_exit_trans = False, duration: float = 1, wait_duration: float = 0.7):
         '''
         If exit_trans = False, the transition will zoom out
         Duration calculate in second
         '''
         super().__init__(game)
         self.next_scene = next_scene
-        self.zoom_pos = zoom_pos
         self.is_exit_trans = is_exit_trans
-        self.init_quad_len = (not self.is_exit_trans) * Game_CONST.SCR_WIDTH * math.sqrt(2) + 1
-        self.exit_quad_len = self.is_exit_trans * Game_CONST.SCR_WIDTH * math.sqrt(2) + 1
+        self.init_quad_len = (not self.is_exit_trans) * Game_CONST.SCR_WIDTH * math.sqrt(2) + 10
+        self.exit_quad_len = self.is_exit_trans * Game_CONST.SCR_WIDTH * math.sqrt(2) + 10
         self.speed = abs(self.exit_quad_len-self.init_quad_len) / duration
+        self.duration = duration
+        self.wait_duration = wait_duration
+        self.blind_color = pygame.Color("white")
         self.positions = [
-            pygame.Vector2(zoom_pos) + pygame.Vector2(cord) * Game_CONST.SCR_WIDTH for cord in Game_CONST.CORNER_ADJECTION_DIR
+            pygame.Vector2(Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT/2) + pygame.Vector2(cord) * Game_CONST.SCR_WIDTH/2 for cord in Game_CONST.CORNER_ADJECTION_DIR
         ]
     
     def update(self):
-        self.init_quad_len += self.speed * (self.is_exit_trans*2-1)
-        if self.init_quad_len >= self.exit_quad_len:
+        self.init_quad_len += self.speed * (self.game.dt - (self.game.dt >= self.wait_duration)*self.wait_duration) * (self.is_exit_trans*2-1)
+        if self.init_quad_len > self.exit_quad_len and self.is_exit_trans or self.init_quad_len < self.exit_quad_len and not self.is_exit_trans:
             if self.is_exit_trans:
-                load_scene(self.game, SceneTransition(self.game, ))
+                pygame.time.wait(int(self.wait_duration*1000))
+                load_scene(self.game, SceneTransition(self.game, self.next_scene, not self.is_exit_trans, self.duration, self.wait_duration))
+            else:
+                self.game.renderer.clear()
+                load_scene(self.game, self.next_scene)
 
     def draw(self):
-        pass
+        for pos in self.positions:
+            fill_diagnal_square(self.game.renderer, pos, self.init_quad_len)
+
 
 '''
    _____ _                             _____                   ______ _ _      
@@ -158,11 +164,15 @@ class SaveFileChoose(Scene):
                 ),
                 self.game,
                 load_scene,  # place holder
-                [self.game, Level(self.game, self.save_datas[x-1])],
+                [self.game, SceneTransition(self.game, Level(self.game, self.save_datas[x-1]), True)],
             )
             for x in range(1, 4)
         ]
-        self.save_file_content: list[Text] = [[],[],[]]
+        self.save_file_content: list[Text] = [
+            Text(self.game, "New Game", self.save_file_buttons[i].hitbox.center, "basis33.ttf", pygame.Color("white"), font_size=16),
+            Text(self.game, "New Game", self.save_file_buttons[i].hitbox.center, "basis33.ttf", pygame.Color("white"), font_size=16),
+            Text(self.game, "New Game", self.save_file_buttons[i].hitbox.center, "basis33.ttf", pygame.Color("white"), font_size=16)
+        ]
 
         self.go_back = Button(
             Game_CONST.PATH + "/assets/graphics/ux-ui/button/back",
@@ -174,7 +184,8 @@ class SaveFileChoose(Scene):
         # make context for save file
         for i,save_file in enumerate(self.save_datas):
             if save_file == Game_CONST.new_game_data:
-                self.save_file_content[i] = Text(self.game, "New Game", self.save_file_buttons[i].hitbox.center, "basis33.ttf", pygame.Color("white"), font_size=16)
+                # self.save_file_content[i] = Text(self.game, "New Game", self.save_file_buttons[i].hitbox.center, "basis33.ttf", pygame.Color("white"), font_size=16)
+                pass
             else:
                 pass
 

@@ -27,10 +27,9 @@ class Game:
         self.scene_stack[-1].update()
 
     def draw(self):
-        self.renderer.clear()
+        # self.renderer.clear()
 
         self.scene_stack[-1].draw()
-
         self.renderer.present()
 
     def run(self):
