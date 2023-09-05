@@ -7,9 +7,23 @@ if TYPE_CHECKING:
 class GAME_CONST:
     
     new_game_data = {
-        #placeholder
+        "level" : {
+            "id" : 1,
+            "check_point" : 1
+        }
     }
-
+    EDGE_ADJECTION_DIR = [
+        (0,1),
+        (1,0),
+        (0,-1),
+        (-1,0)
+    ]
+    CORNER_ADJECTION_DIR = [
+        (1,1),
+        (1,-1),
+        (-1,-1),
+        (-1,1)
+    ]
     def __init__(self) -> None:
         self.PATH = os.path.abspath(os.path.dirname(__file__)).replace("\\","/") + "/.."
         self.GAME_NAME = "Mushroom Apocalypse"
@@ -23,6 +37,7 @@ class GAME_CONST:
         self.SCR_SCALE = 5
         self.SCALE = self.SCR_SCALE
 
+        self.BASE_FONT_SCALE = 5
         self.FONT_SCALE = 1
 
     def resize_update(self,game : 'Game'):
@@ -41,7 +56,7 @@ class GAME_CONST:
 
         self.SCALE = self.SCR_WIDTH/self.CAMERA_WIDTH*self.SCR_SCALE
 
-        self.FONT_SCALE = self.SCR_WIDTH / 1600
+        self.FONT_SCALE = self.SCR_WIDTH / 1600 * self.BASE_FONT_SCALE
 
 Game_CONST = GAME_CONST()
         

@@ -1,4 +1,4 @@
-import os, pygame
+import os, pygame, math
 from scripts.CONST import Game_CONST
 from pygame._sdl2.video import Texture, Renderer
 
@@ -17,3 +17,8 @@ def load_images(renderer: Renderer, path) -> list[Texture]:
         for file in files:
             paths.append(Game_CONST.PATH + "/" + file)
     return [Texture.from_surface(renderer, pygame.image.load(_path)) for _path in paths]
+
+def fill_diagnal_square(renderer: Renderer, position: pygame.Vector2, size: float):
+    renderer.fill_quad(
+        *[position + pygame.Vector2(offset)*(size/math.sqrt(2)) for offset in Game_CONST.EDGE_ADJECTION_DIR]
+    )

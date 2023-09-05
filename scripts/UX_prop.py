@@ -1,4 +1,5 @@
 import pygame
+from pygame import freetype
 from pygame._sdl2.video import Texture,Image
 from scripts.CONST import Game_CONST
 from typing import TYPE_CHECKING
@@ -46,3 +47,51 @@ class Button:
             self.hang.draw(self.hang.get_rect(),self.hitbox)
         else:
             self.press.draw(self.press.get_rect(),self.hitbox)
+class Text:
+
+    def __init__(self, game: "Game", text: str, center_pos, font: str, text_color = None, bgcolor = None, font_size = 0, rotation = 0) -> None:
+        self.game = game
+        self.text = text
+        self.font = font
+        self.text_color = text_color
+        self.bgcolor = bgcolor
+        self.font_size = font_size
+        self.rotation = rotation
+        self.center_pos = center_pos
+        self.text_surf,self.text_rect = freetype.Font(Game_CONST.PATH + '/assets/font/' + self.font.replace("/",""),self.font_size * Game_CONST.FONT_SCALE).render(
+            text,
+            text_color,
+            bgcolor,
+            rotation = self.rotation,
+            size = self.font_size
+        )
+        self.texture = Texture.from_surface(game.renderer,self.text_surf)
+    
+    def custom_update(self, text = None ,font = None , text_color = None , bgcolor = None , font_size = None , rotation = None):
+        if text is None:
+            text = self.text
+        if font is None:
+            font = self.font
+        if text_color is None:
+            text_color = self.text_color
+        if bgcolor is None:
+            bgcolor = self.bgcolor
+        if font_size is None:
+            font_size = self.font_size
+        if rotation is None:
+            rotation = self.rotation
+        self.text_surf, self.text_rect = freetype.Font(Game_CONST.PATH + '/assets/font/' + self.font.replace("/",""),self.font_size * Game_CONST.FONT_SCALE).render(
+            text,
+            text_color,
+            bgcolor,
+            rotation = rotation,
+            size = font_size
+        )
+        self.texture.update(self.text_surf)
+
+    def update(self):
+        self.text_rect.w, self.text_rect.h = [x * Game_CONST.FONT_SCALE for x in self.texture.get_rect().size]
+        self.text_rect.center = self.center_pos
+    
+    def draw(self):
+        self.texture.draw(self.texture.get_rect(),self.text_rect)

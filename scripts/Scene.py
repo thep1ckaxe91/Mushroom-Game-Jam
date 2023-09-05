@@ -1,8 +1,10 @@
 import pygame, json
+from main import Game
 from scripts.CONST import Game_CONST
 from scripts.UX_prop import *
 from typing import TYPE_CHECKING
 from pygame import freetype
+from scripts.UX_prop import Game
 from scripts.support_func import *
 
 freetype.init()
@@ -74,6 +76,44 @@ class CutScene(Scene):
 
 
 '''
+   _____                       _______                  _ _   _             
+  / ____|                     |__   __|                (_) | (_)            
+ | (___   ___ ___ _ __   ___     | |_ __ __ _ _ __  ___ _| |_ _  ___  _ __  
+  \___ \ / __/ _ \ '_ \ / _ \    | | '__/ _` | '_ \/ __| | __| |/ _ \| '_ \ 
+  ____) | (_|  __/ | | |  __/    | | | | (_| | | | \__ \ | |_| | (_) | | | |
+ |_____/ \___\___|_| |_|\___|    |_|_|  \__,_|_| |_|___/_|\__|_|\___/|_| |_|
+                                                                            
+                                                                            
+'''
+
+class SceneTransition(Scene):
+
+    def __init__(self, game: Game, next_scene : Scene, zoom_pos , is_exit_trans = False, duration: float = 1):
+        '''
+        If exit_trans = False, the transition will zoom out
+        Duration calculate in second
+        '''
+        super().__init__(game)
+        self.next_scene = next_scene
+        self.zoom_pos = zoom_pos
+        self.is_exit_trans = is_exit_trans
+        self.init_quad_len = (not self.is_exit_trans) * Game_CONST.SCR_WIDTH * math.sqrt(2) + 1
+        self.exit_quad_len = self.is_exit_trans * Game_CONST.SCR_WIDTH * math.sqrt(2) + 1
+        self.speed = abs(self.exit_quad_len-self.init_quad_len) / duration
+        self.positions = [
+            pygame.Vector2(zoom_pos) + pygame.Vector2(cord) * Game_CONST.SCR_WIDTH for cord in Game_CONST.CORNER_ADJECTION_DIR
+        ]
+    
+    def update(self):
+        self.init_quad_len += self.speed * (self.is_exit_trans*2-1)
+        if self.init_quad_len >= self.exit_quad_len:
+            if self.is_exit_trans:
+                load_scene(self.game, SceneTransition(self.game, ))
+
+    def draw(self):
+        pass
+
+'''
    _____ _                             _____                   ______ _ _      
   / ____| |                           / ____|                 |  ____(_) |     
  | |    | |__   ___   ___  ___  ___  | (___   __ ___   _____  | |__   _| | ___ 
@@ -104,7 +144,7 @@ class SaveFileChoose(Scene):
         self.save_datas = []
         for i in range(3):
             try:
-                with open(Game_CONST.PATH + f"/saves/save{i}.json") as save_file:
+                with open(Game_CONST.PATH + f"/saves/save{i}.json","r") as save_file:
                     self.save_datas.append(json.load(save_file))
             except:
                 self.save_datas.append(Game_CONST.new_game_data.copy())
@@ -122,7 +162,7 @@ class SaveFileChoose(Scene):
             )
             for x in range(1, 4)
         ]
-        self.save_file_content: list[list[Texture|  pygame.Rect]] = [[],[],[]]
+        self.save_file_content: list[Text] = [[],[],[]]
 
         self.go_back = Button(
             Game_CONST.PATH + "/assets/graphics/ux-ui/button/back",
@@ -134,12 +174,7 @@ class SaveFileChoose(Scene):
         # make context for save file
         for i,save_file in enumerate(self.save_datas):
             if save_file == Game_CONST.new_game_data:
-                message_surf,message_rect = freetype.Font(Game_CONST.PATH + '/assets/font/basis33.ttf',Game_CONST.FONT_SCALE * 16).render(
-                    "Start New Game",
-                    pygame.Color("white")
-                )
-                message_rect.center = self.save_file_buttons[i].hitbox.center
-                self.save_file_content[i] = [Texture.from_surface(self.game.renderer, message_surf),message_rect]
+                self.save_file_content[i] = Text(self.game, "New Game", self.save_file_buttons[i].hitbox.center, "basis33.ttf", pygame.Color("white"), font_size=16)
             else:
                 pass
 
@@ -151,20 +186,21 @@ class SaveFileChoose(Scene):
                 save_button.center_ratio_y, 0.5, 5 * self.game.dt
             )
         self.go_back.update()
-        for i,texture_rect in enumerate(self.save_file_content):
-            texture_rect[1].center = self.save_file_buttons[i].hitbox.center
-            texture_rect[1].width,texture_rect[1].height = [x * Game_CONST.FONT_SCALE for x in texture_rect[0].get_rect().size]
+        for i,content in enumerate(self.save_file_content):
+            content.center_pos = self.save_file_buttons[i].hitbox.center
+            content.update()
 
     def draw(self):
         self.bg.draw(
             self.bg.get_rect(),
             pygame.Rect(0, 0, self.game.window.size[0], self.game.window.size[1]),
         )
+        
+            # print(texture_rect)
         for save_button in self.save_file_buttons:
             save_button.draw()
-        for save_texture, texture_rect in self.save_file_content:
-            save_texture.draw(texture_rect,texture_rect)
-            print(texture_rect)
+        for content in self.save_file_content:
+            content.draw()
         self.go_back.draw()
 
     def check_events(self, event):

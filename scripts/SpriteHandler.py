@@ -10,9 +10,8 @@ if TYPE_CHECKING:
 class SpriteHandler:
     def __init__(self, game : "Game"):
         self.game = game
-        self.images = []
         self.group = pygame.sprite.Group()
-        self.sprites = []
+        self.sprites: list[Texture] = []
     
     def update(self):
         self.group.update()
