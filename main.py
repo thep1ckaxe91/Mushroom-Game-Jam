@@ -15,6 +15,7 @@ class Game:
         self.window.resizable = True
         self.renderer = Renderer(self.window)
         self.scene_stack: list[Scene] = [MainMenu(self)]
+        self.transition_stack: list[SceneTransition] = []
 
         self.dt = -1
         self.clock = pygame.time.Clock()
@@ -25,11 +26,17 @@ class Game:
 
         Game_CONST.update(self)
         self.scene_stack[-1].update()
+        if len(self.transition_stack) > 0:
+            self.transition_stack[-1].update()
+
 
     def draw(self):
-        # self.renderer.clear()
+        self.renderer.clear()
 
         self.scene_stack[-1].draw()
+        if len(self.transition_stack) > 0:
+            self.transition_stack[-1].draw()
+        
         self.renderer.present()
 
     def run(self):

@@ -1,5 +1,4 @@
 import pygame, json
-from main import Game
 from scripts.CONST import Game_CONST
 from scripts.UX_prop import *
 from typing import TYPE_CHECKING
@@ -40,6 +39,12 @@ def load_scene(game: "Game", scene: Scene, delay: int = 0):
 
 def go_back_scene(game: "Game"):
     del game.scene_stack[-1]
+
+def load_scene_with_transition(game: "Game", scene: Scene):
+    game.transition_stack.append(SceneTransition(game,is_exit_trans=False))
+    game.transition_stack.append(SceneTransition(game,next_scene=scene, is_exit_trans=True))
+
+
 
 '''
   _____  _                   _     _        _                    _ 
@@ -86,13 +91,13 @@ class CutScene(Scene):
 
 class SceneTransition(Scene):
 
-    def __init__(self, game: Game, next_scene : Scene, is_exit_trans = False, duration: float = 1, wait_duration: float = 0.7):
+    def __init__(self, game: Game, next_scene: Scene = None, is_exit_trans = False, duration: float = 1, wait_duration: float = 0.7):
         '''
         If exit_trans = False, the transition will zoom out
         Duration calculate in second
+        next_scene != None only for exit
         '''
         super().__init__(game)
-        self.next_scene = next_scene
         self.is_exit_trans = is_exit_trans
         self.init_quad_len = (not self.is_exit_trans) * Game_CONST.SCR_WIDTH * math.sqrt(2) + 10
         self.exit_quad_len = self.is_exit_trans * Game_CONST.SCR_WIDTH * math.sqrt(2) + 10
@@ -100,19 +105,23 @@ class SceneTransition(Scene):
         self.duration = duration
         self.wait_duration = wait_duration
         self.blind_color = pygame.Color("white")
+        if next_scene != None:
+            self.next_scene = next_scene
         self.positions = [
             pygame.Vector2(Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT/2) + pygame.Vector2(cord) * Game_CONST.SCR_WIDTH/2 for cord in Game_CONST.CORNER_ADJECTION_DIR
         ]
-    
+    '''
+    ////////////////////////////////////////////////
+    Try to work out the transition
+    //////////////////////////////////////////////
+    '''
     def update(self):
         self.init_quad_len += self.speed * (self.game.dt - (self.game.dt >= self.wait_duration)*self.wait_duration) * (self.is_exit_trans*2-1)
         if self.init_quad_len > self.exit_quad_len and self.is_exit_trans or self.init_quad_len < self.exit_quad_len and not self.is_exit_trans:
             if self.is_exit_trans:
                 pygame.time.wait(int(self.wait_duration*1000))
-                load_scene(self.game, SceneTransition(self.game, self.next_scene, not self.is_exit_trans, self.duration, self.wait_duration))
-            else:
-                self.game.renderer.clear()
                 load_scene(self.game, self.next_scene)
+            self.game.transition_stack.pop()
 
     def draw(self):
         for pos in self.positions:
@@ -163,8 +172,8 @@ class SaveFileChoose(Scene):
                     1.5 * Game_CONST.SCR_HEIGHT,
                 ),
                 self.game,
-                load_scene,  # place holder
-                [self.game, SceneTransition(self.game, Level(self.game, self.save_datas[x-1]), True)],
+                load_scene_with_transition,  # place holder
+                [self.game, Level(self.game, self.save_datas[x-1])],
             )
             for x in range(1, 4)
         ]
