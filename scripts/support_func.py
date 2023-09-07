@@ -19,7 +19,7 @@ def load_images(renderer: Renderer, path) -> list[Texture]:
     return [Texture.from_surface(renderer, pygame.image.load(_path)) for _path in paths]
 
 def fill_diagnal_square(renderer: Renderer, position: pygame.Vector2, size: float):
-    renderer.draw_color = pygame.Color("black")
+    renderer.draw_color = pygame.Color("brown")
     renderer.fill_quad(
         *[position + pygame.Vector2(offset)*(size/math.sqrt(2)) for offset in Game_CONST.EDGE_ADJECTION_DIR]
     )

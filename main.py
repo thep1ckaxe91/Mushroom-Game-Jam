@@ -33,10 +33,12 @@ class Game:
     def draw(self):
         self.renderer.clear()
 
-        self.scene_stack[-1].draw()
-        if len(self.transition_stack) > 0:
+        if len(self.transition_stack) == 1:
             self.transition_stack[-1].draw()
-        
+        self.scene_stack[-1].draw()
+        if len(self.transition_stack) == 2:
+            self.transition_stack[-1].draw()
+
         self.renderer.present()
 
     def run(self):

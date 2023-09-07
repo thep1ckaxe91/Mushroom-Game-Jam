@@ -60,7 +60,10 @@ def load_scene_with_transition(game: "Game", scene: Scene):
 class Level(Scene):
     def __init__(self, game: "Game", data: dict):
         super().__init__(game)
-        pass
+        self.save_data = data
+    
+    def draw(self):
+        self.game.renderer.draw_color = pygame.Color("black")
 
 '''
    _____      _      _____                     
@@ -91,7 +94,7 @@ class CutScene(Scene):
 
 class SceneTransition(Scene):
 
-    def __init__(self, game: Game, next_scene: Scene = None, is_exit_trans = False, duration: float = 1, wait_duration: float = 0.7):
+    def __init__(self, game: "Game", next_scene: Scene = None, is_exit_trans = False, duration: float = 1, wait_duration: float = 0.7):
         '''
         If exit_trans = False, the transition will zoom out
         Duration calculate in second
@@ -110,14 +113,11 @@ class SceneTransition(Scene):
         self.positions = [
             pygame.Vector2(Game_CONST.SCR_WIDTH/2,Game_CONST.SCR_HEIGHT/2) + pygame.Vector2(cord) * Game_CONST.SCR_WIDTH/2 for cord in Game_CONST.CORNER_ADJECTION_DIR
         ]
-    '''
-    ////////////////////////////////////////////////
-    Try to work out the transition
-    //////////////////////////////////////////////
-    '''
+
     def update(self):
-        self.init_quad_len += self.speed * (self.game.dt - (self.game.dt >= self.wait_duration)*self.wait_duration) * (self.is_exit_trans*2-1)
-        if self.init_quad_len > self.exit_quad_len and self.is_exit_trans or self.init_quad_len < self.exit_quad_len and not self.is_exit_trans:
+        len_delta = self.speed * (self.game.dt - (self.game.dt >= self.wait_duration)*self.wait_duration) * (self.is_exit_trans*2-1)
+        self.init_quad_len += len_delta
+        if self.init_quad_len - len_delta > self.exit_quad_len and self.is_exit_trans or self.init_quad_len + len_delta < self.exit_quad_len and not self.is_exit_trans:
             if self.is_exit_trans:
                 pygame.time.wait(int(self.wait_duration*1000))
                 load_scene(self.game, self.next_scene)
