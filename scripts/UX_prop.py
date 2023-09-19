@@ -58,7 +58,7 @@ class Text:
         self.font_size = font_size
         self.rotation = rotation
         self.center_pos = center_pos
-        self.text_surf,self.text_rect = freetype.Font(Game_CONST.PATH + '/assets/font/' + self.font.replace("/",""),self.font_size * Game_CONST.FONT_SCALE).render(
+        self.text_surf,self.text_rect = freetype.Font(Game_CONST.PATH + '/assets/font/' + self.font.replace("/",""),self.font_size * Game_CONST.UI_SCALE).render(
             text,
             text_color,
             bgcolor,
@@ -80,7 +80,7 @@ class Text:
             font_size = self.font_size
         if rotation is None:
             rotation = self.rotation
-        self.text_surf, self.text_rect = freetype.Font(Game_CONST.PATH + '/assets/font/' + self.font.replace("/",""),self.font_size * Game_CONST.FONT_SCALE).render(
+        self.text_surf, self.text_rect = freetype.Font(Game_CONST.PATH + '/assets/font/' + self.font.replace("/",""),self.font_size * Game_CONST.UI_SCALE).render(
             text,
             text_color,
             bgcolor,
@@ -90,7 +90,7 @@ class Text:
         self.texture.update(self.text_surf)
 
     def update(self):
-        self.text_rect.w, self.text_rect.h = [x * Game_CONST.FONT_SCALE for x in self.texture.get_rect().size]
+        self.text_rect.w, self.text_rect.h = [x * Game_CONST.UI_SCALE for x in self.texture.get_rect().size]
         self.text_rect.center = self.center_pos
     
     def draw(self):

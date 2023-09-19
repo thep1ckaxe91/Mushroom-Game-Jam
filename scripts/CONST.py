@@ -38,7 +38,7 @@ class GAME_CONST:
         self.SCALE = self.SCR_SCALE
 
         self.BASE_FONT_SCALE = 5
-        self.FONT_SCALE = 1
+        self.UI_SCALE = 1
 
     def resize_update(self,game : 'Game'):
         self.SCR_WIDTH = game.window.size[0]
@@ -56,7 +56,8 @@ class GAME_CONST:
 
         self.SCALE = self.SCR_WIDTH/self.CAMERA_WIDTH*self.SCR_SCALE
 
-        self.FONT_SCALE = self.SCR_WIDTH / 1600 * self.BASE_FONT_SCALE
+        self.UI_SCALE = self.SCR_WIDTH / 1600 * self.SCR_SCALE
+
 
 Game_CONST = GAME_CONST()
         
