@@ -11,5 +11,15 @@ from scripts.SpriteHandler import SpriteHandler
 class Tilemap:
     def __init__(self):
         self.tile_size = Game_CONST.TILE_SIZE
-        self.tile_map = {}
+        self.physical_tile_map = {}
+        self.visible_tile_map = {}
+        '''template'''
+        '''
+        {
+            "16,59" : {
+                "type" : 
+            }
+        }
+        '''
+
         self.offgrid_tiles = []

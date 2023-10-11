@@ -40,6 +40,9 @@ class GAME_CONST:
         self.BASE_FONT_SCALE = 5
         self.UI_SCALE = 1
 
+        self.physical_assets = {}
+        self.visible_assets = {}
+
     def resize_update(self,game : 'Game'):
         self.SCR_WIDTH = game.window.size[0]
         # self.CAMERA_WIDTH = self.camera_screen_ratio * self.SCR_WIDTH
