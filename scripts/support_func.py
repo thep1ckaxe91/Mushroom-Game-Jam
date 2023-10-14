@@ -31,4 +31,7 @@ def fill_diagnal_square(renderer: Renderer, position: pygame.Vector2, size: floa
 def world_to_display_pos(game: 'Game',w_pos: pygame.Vector2):
     return w_pos - game.camera.w_pos
 
+def display_to_world_pos(game: 'Game',d_pos: pygame.Vector2):
+    return d_pos + game.camera.w_pos
+
 # def is_in_sight(game: 'Game', )
