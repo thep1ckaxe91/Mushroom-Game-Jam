@@ -3,6 +3,7 @@ import pygame,math,sys,time,os,json
 from scripts.CONST import Game_CONST
 from scripts.support_func import *
 from pygame import Vector2
+from main import Game
 pygame.init()
 WIDTH,HEIGHT = 1366,768
 window = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -18,8 +19,8 @@ Dictionary of all tiles that sliced from all sheet
 '''
 try:
     data = {
-        "physical_tiles" : json.load(level_dir+"/physical.json"),
-        "visible_tiles" : json.load(level_dir+"/visible.json")
+        "physical_tiles" : json.load(level_dir+"/physical/physical.json"),
+        "visible_tiles" : json.load(level_dir+"/visible/visible.json")
     }
 except:
     try:
@@ -28,20 +29,26 @@ except:
         print("level dir existed")
     data = {
         "physical_tiles" : {
-            "2,2" : {
-                "type" : "grass",
-                "variant" : 0,
-            }
+            # "2,2" : {
+            #     "type" : "grass",
+            #     "variant" : 0,
+            # }
         },
         "visible_tiles" : {
-            "1,1" : {
-                "type" : "grass",
-                "variant" : 0,
-            }
+            # "1,1" : {
+            #     "type" : "grass",
+            #     "variant" : 0,
+            # }
         }
     }
 physical_tiles = data["physical_tiles"]
 visible_tiles = data["visible_tiles"]
+
+#current choosing to draw tile
+cur_type = "grass"
+cur_variant = 0
+cur_tile_physic = "physical"
+
 #load assets
 for root, dirs, files in os.walk(Game_CONST.PATH + ('/assets/graphics/tiles')):
     if root == Game_CONST.PATH + ('/assets/graphics/tiles'):
@@ -52,54 +59,76 @@ for root, dirs, files in os.walk(Game_CONST.PATH + ('/assets/graphics/tiles')):
             except:
                 pass
 
-#current choosing to draw tile
-cur_type = "grass"
-cur_variant = 0
-
-
 def save():
     try:
         os.mkdir(level_dir+"/physical")
     except:
-        print("dir existed")
-    json.dump(data["physical_tiles"],level_dir+"/physical")
-    json.dump(data["visible_tiles"],level_dir+"/visible")
+        print("physical dir existed")
+    try:
+        os.mkdir(level_dir+"/visible")
+    except:
+        print("visible dir existed")
+    print(physical_tiles)
+    print(visible_tiles)
+    with open(level_dir+"/physical/physical.json",'w') as f:
+        json.dump(physical_tiles,f)
+        
+    with open(level_dir+"/visible/visible.json",'w') as f:
+        json.dump(visible_tiles,f)
 
 def update():
-    pass
-def draw_tile(tile: (str,dict),assets: dict(str,pygame.Surface)):
-    pos = Vector2(tuple(map(int,tile[0].split(','))))*Game_CONST.TILE_SIZE
+    if pygame.mouse.get_pressed()[0]:
+        mp = pygame.mouse.get_pos()
+        wmp = display_to_world_pos(temp_game,mp)
+        wmp.x//=Game_CONST.TILE_SIZE
+        wmp.y//=Game_CONST.TILE_SIZE
+        tile_pos=str(wmp.x)+','+str(wmp.y)
+        if cur_tile_physic == "physical":
+            physical_tiles[tile_pos]={"type": cur_type, "variant": cur_variant}
+        else:
+            visible_tiles[tile_pos]={"type": cur_type, "variant": cur_variant}
+def draw_tile(tile: (str,dict),assets: dict):
+    pos = Vector2(tuple(map(float,tile[0].split(','))))*Game_CONST.TILE_SIZE
     sheet = assets[tile[1]["type"]]
     variant = tile[1]["variant"]
     r_area = pygame.Rect(variant*Game_CONST.TILE_SIZE//sheet.get_width(),(variant%(sheet.get_width()//Game_CONST.TILE_SIZE))*Game_CONST.TILE_SIZE,Game_CONST.TILE_SIZE,Game_CONST.TILE_SIZE)
     window.blit(sheet,pos,r_area)
 
-def draw_tiles(tiles: dict(str,dict(str,any)), assets: dict(str,pygame.Surface)):
+def draw_tiles(tiles: dict, assets: dict):
     for tile in tiles.items():
-        draw_tile(tile,assets)        
- 
+        draw_tile(tile,assets)
+temp_game = Game()
 def draw():
+    window.fill("black")
     #draw map
     draw_tiles(physical_tiles,physical_assets)
     draw_tiles(visible_tiles,visible_assets)
     #draw cursor
     mp = pygame.mouse.get_pos()
-    wmp = display_to_world_pos()
-    draw_tile(())
+    wmp = display_to_world_pos(temp_game,mp)
+    wmp.x//=Game_CONST.TILE_SIZE
+    wmp.y//=Game_CONST.TILE_SIZE
+    tile_pos=str(wmp.x)+','+str(wmp.y)
+    if cur_tile_physic == "physical":
+        draw_tile((tile_pos,{"type" : cur_type, "variant" : cur_variant}), physical_assets)
+    else:
+        draw_tile((tile_pos,{"type" : cur_type, "variant" : cur_variant}), visible_assets)
+    
+    pygame.display.flip()
 
 if __name__ == "__main__":
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-
-                save()
-
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
+        for event in pygame.event.get():    
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSLASH:
                     save()
+                    print("saved")
+                elif event.key == pygame.K_0:
+                    save()
+                    print("level saved")
+                    pygame.quit()
+                    sys.exit()
         update()
         draw()
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(100)

@@ -17,7 +17,7 @@ class Game:
         self.scene_stack: list[Scene] = [MainMenu(self)]
         self.transition_stack: list[SceneTransition] = []
         
-        self.camera = Camera(self,(0,0))
+        self.camera = Camera(self,pygame.Vector2())
         self.assets = {
             
         }
