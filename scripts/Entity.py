@@ -20,7 +20,7 @@ class Entity:
     def draw(self):...
 
 class Player(Entity):
-    def __init__(self, game: Game, wpos) -> None:
+    def __init__(self, game: 'Game', wpos) -> None:
         super().__init__(game, wpos)
     
     def update(self):

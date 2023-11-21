@@ -19,8 +19,34 @@ class Game:
         
         self.camera = Camera(self,pygame.Vector2())
         self.assets = {
-            
+            'physical' : {},
+            'visible' : {}
         }
+        for root, dirs, files in os.walk(Game_CONST.PATH + ('/assets/graphics/tiles')):
+            if root == Game_CONST.PATH + ('/assets/graphics/tiles'):
+                for dir in dirs:
+                    try:
+                        self.assets['physical'][dir]: Texture = Texture.from_surface(pygame.image.load(Game_CONST.PATH + (f'/assets/graphics/tiles/{dir}/physical/sheet.png')))
+                    except:
+                        pass
+                    try:
+                        self.assets['visible'][dir]: Texture = Texture.from_surface(pygame.image.load(Game_CONST.PATH + (f'/assets/graphics/tiles/{dir}/visible/sheet.png')))
+                    except:
+                        pass
+        physical_assets = self.assets['physical']
+        visible_assets = self.assets['visible']
+        #load all assets to texture
+        for root, dirs, files in os.walk(Game_CONST.PATH + ('/assets/graphics/tiles')):
+            if root == Game_CONST.PATH + ('/assets/graphics/tiles'):
+                for dir in dirs:
+                    try:
+                        physical_assets[dir]: Texture = Texture.from_surface(self.renderer, pygame.image.load(Game_CONST.PATH + (f'/assets/graphics/tiles/{dir}/physical/sheet.png')))
+                    except:
+                        print(dir + " not yet exist physical tiles")
+                    try:
+                        visible_assets[dir]: Texture = Texture.from_surface(self.renderer, pygame.image.load(Game_CONST.PATH + (f'/assets/graphics/tiles/{dir}/visible/sheet.png')))
+                    except:
+                        print(dir + " not yet exist visible tiles")
 
         self.dt = -1
         self.clock = pygame.time.Clock()

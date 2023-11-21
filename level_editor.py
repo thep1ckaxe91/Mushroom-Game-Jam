@@ -53,7 +53,7 @@ for root, dirs, files in os.walk(Game_CONST.PATH + ('/assets/graphics/tiles')):
                 visible_assets[dir]: pygame.Surface = pygame.image.load(Game_CONST.PATH + (f'/assets/graphics/tiles/{dir}/visible/sheet.png')).convert()
             except:
                 pass
-
+pygame.event.set_grab(True)
 def save():
     try:
         os.mkdir(level_dir+"/physical")
@@ -71,8 +71,9 @@ def save():
 pressing = False
 def update():
     global scroll,pressing
-    if pygame.mouse.get_pressed()[0]:
-        mp = pygame.mouse.get_pos()
+    keys = pygame.key.get_pressed()
+    if pygame.mouse.get_pressed()[0] and not keys[pygame.K_x]:
+        mp = Vector2(pygame.mouse.get_pos())
         wmp = display_to_world_pos(temp_game,mp)
         wmp.x//=Game_CONST.TILE_SIZE
         wmp.y//=Game_CONST.TILE_SIZE
@@ -81,6 +82,18 @@ def update():
             physical_tiles[tile_pos]={"type": cur_type, "variant": cur_variant}
         else:
             visible_tiles[tile_pos]={"type": cur_type, "variant": cur_variant}
+    elif pygame.mouse.get_pressed()[0] and keys[pygame.K_x]:
+        mp = pygame.mouse.get_pos()
+        wmp = display_to_world_pos(temp_game,mp)
+        wmp.x//=Game_CONST.TILE_SIZE
+        wmp.y//=Game_CONST.TILE_SIZE
+        tile_pos=str(wmp.x)+','+str(wmp.y)
+        if cur_tile_physic == "physical":
+            if physical_tiles.get(tile_pos):
+                physical_tiles.pop(tile_pos)
+        else:
+            if visible_tiles.get(tile_pos):
+                visible_tiles.pop(tile_pos)
     elif pygame.mouse.get_pressed()[2] and not pressing:
         pressing = True
         pygame.mouse.get_rel()
@@ -89,7 +102,6 @@ def update():
 
 def draw_tile(tile: (str,dict),assets: dict):
     pos = Vector2(tuple(map(float,tile[0].split(','))))*Game_CONST.TILE_SIZE
-    pos += scroll
     sheet = assets[tile[1]["type"]]
     variant = tile[1]["variant"]
     r_area = pygame.Rect((variant%(sheet.get_width()//Game_CONST.TILE_SIZE))*Game_CONST.TILE_SIZE,variant*Game_CONST.TILE_SIZE//sheet.get_width()*Game_CONST.TILE_SIZE,Game_CONST.TILE_SIZE,Game_CONST.TILE_SIZE)
@@ -98,6 +110,8 @@ def draw_tile(tile: (str,dict),assets: dict):
 def draw_tiles(tiles: dict, assets: dict):
     for tile in tiles.items():
         draw_tile(tile,assets)
+mouse_tile = pygame.Surface((Game_CONST.TILE_SIZE,Game_CONST.TILE_SIZE),pygame.SRCALPHA)
+mouse_tile.fill('#00ff00'); mouse_tile.set_alpha(255)
 def draw():
     window.fill("black")
     #draw map
@@ -133,6 +147,7 @@ def draw():
         tmp_surf.blit(sheet,(0,0),r_area)
         tmp_surf = pygame.transform.scale_by(tmp_surf,3)
         window.blit(tmp_surf,pos)
+    window.blit(mouse_tile,mp)
     pygame.display.flip()
 
 if __name__ == "__main__":
