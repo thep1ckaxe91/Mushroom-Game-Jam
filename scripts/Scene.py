@@ -4,6 +4,7 @@ from scripts.UX_prop import *
 from typing import TYPE_CHECKING
 from pygame import freetype
 from scripts.support_func import *
+from scripts.Tilemap import *
 
 freetype.init()
 
@@ -59,10 +60,52 @@ def load_scene_with_transition(game: "Game", scene: Scene):
 
 class Level(Scene):
     def __init__(self, game: "Game", data: dict):
+        '''
+        Class for playable level
+
+        A level is considered as a zone that when move, no screen transition or Scene stack changed
+
+        A level should have its:
+            ID
+            entry_positions/doors (many entry viable)
+            exit_positions/doors (many exit viable)
+            Tile Map
+
+        for that JSON format should look sth like this:
+            {
+                'id' : 2,
+                'entry_positions' : {
+                    '3,2 1' : '2,2' // tile position, the key is the value of the previous exit position and level id seperated by a space
+                    '3,6 1' : '5,3',
+                }
+                'exit_positions' :{
+                    '3,2 1' : '2,2' // tile position, the key is the value of the next entry position and level id seperated by a space
+                    '3,6 1' : '5,3',
+                }
+                'tilemap' : {
+                    'physical' : {
+                    
+                    }
+                    'visible' : {
+                    
+                    }
+                }
+                player?
+            }
+        whenever a player enter/load in a level, the player must be exist somewhere
+        '''
         super().__init__(game)
-        self.save_data = data
+        self.id = data['id']
+        self.entry_pos = data['entry_positions']
+        self.exit_pos = data['exit_positions']
+        self.tilemap = Tilemap(self.game,data['tilemap'])
+    def load_next_level(self,id,):
+        new_level = Level(self.game, )
+        #TODO: the problem is that where do you store the data for each level id?
+        # what should a file
     
     def draw(self):
+        self.tilemap.render(self.game.renderer)
         self.game.renderer.draw_color = pygame.Color("black")
 
 '''
@@ -72,7 +115,6 @@ class Level(Scene):
  | |   | | | | __|  \___ \ / __/ _ \ '_ \ / _ \
  | |___| |_| | |_   ____) | (_|  __/ | | |  __/
   \_____\__,_|\__| |_____/ \___\___|_| |_|\___|
-                                               
                                                
 '''
 
@@ -141,6 +183,9 @@ class SceneTransition(Scene):
 
 class SaveFileChoose(Scene):
     def __init__(self, game: "Game"):
+        '''
+        
+        '''
         super().__init__(game)
 
         self.game = game
